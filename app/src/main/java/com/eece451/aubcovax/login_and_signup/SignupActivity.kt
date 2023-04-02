@@ -1,4 +1,4 @@
-package com.eece451.aubcovax
+package com.eece451.aubcovax.login_and_signup
 
 import android.app.DatePickerDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.widget.Button
+import com.eece451.aubcovax.R
 import com.google.android.material.textfield.TextInputLayout
 import java.text.SimpleDateFormat
 import java.util.*

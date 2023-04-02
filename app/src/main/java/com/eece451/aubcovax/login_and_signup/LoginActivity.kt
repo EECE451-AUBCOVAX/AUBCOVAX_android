@@ -1,4 +1,4 @@
-package com.eece451.aubcovax
+package com.eece451.aubcovax.login_and_signup
 
 import android.content.Intent
 import android.os.Bundle
@@ -9,6 +9,9 @@ import android.text.style.UnderlineSpan
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import com.eece451.aubcovax.MainActivity
+import com.eece451.aubcovax.R
+import com.eece451.aubcovax.api.Authentication
 import com.google.android.material.textfield.TextInputLayout
 
 class LoginActivity : AppCompatActivity() {
@@ -60,6 +63,15 @@ class LoginActivity : AppCompatActivity() {
         if(!inputIsValid) {
             return
         }
+
+        if(username == "patient" && password == "patient")
+        {
+            Authentication.saveRole("patient")
+        }
+
+        val intent = Intent(this, MainActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+        startActivity(intent)
     }
 
     private fun startSignupActivity() {
