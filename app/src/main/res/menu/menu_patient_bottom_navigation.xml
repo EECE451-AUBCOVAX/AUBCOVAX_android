@@ -2,11 +2,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/doses"
-        android:title="Doses"
-        android:icon="@drawable/baseline_vaccines_24"/>
+        android:icon="@drawable/baseline_vaccines_24"
+        android:title="Doses" />
 
     <item
         android:id="@+id/me"
-        android:title="Me"
-        android:icon="@drawable/baseline_person_24"/>
+        android:icon="@drawable/baseline_person_24"
+        android:title="Me" />
 </menu>

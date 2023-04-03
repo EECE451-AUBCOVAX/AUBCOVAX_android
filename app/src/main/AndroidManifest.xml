@@ -12,6 +12,12 @@
         android:theme="@style/Theme.AUBCOVAX"
         tools:targetApi="31">
         <activity
+            android:name=".admin.PatientEntryActivity"
+            android:exported="false" />
+        <activity
+            android:name=".admin.AdminActivity"
+            android:exported="false" />
+        <activity
             android:name=".patient.PatientActivity"
             android:exported="false" />
         <activity

@@ -24,7 +24,7 @@ class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_login)
+        setContentView(R.layout.login_activity)
 
         usernameEditText = findViewById(R.id.usernameLayout)
         usernameEditText?.setTextChangeListener()
@@ -47,7 +47,7 @@ class LoginActivity : AppCompatActivity() {
         val username = usernameEditText?.editText?.text?.toString()
         val password = passwordEditText?.editText?.text?.toString()
 
-        if(username == null || password == null) {
+        if (username == null || password == null) {
             return
         }
 
@@ -60,17 +60,20 @@ class LoginActivity : AppCompatActivity() {
             inputIsValid = false
             passwordEditText?.error = "Please enter your password"
         }
-        if(!inputIsValid) {
+        if (!inputIsValid) {
             return
         }
 
-        if(username == "patient" && password == "patient")
-        {
+        if (username == "patient" && password == "patient") {
             Authentication.saveRole("patient")
+        }
+        else if (username == "admin" && password == "admin") {
+            Authentication.saveRole("admin")
         }
 
         val intent = Intent(this, MainActivity::class.java)
-        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+                or Intent.FLAG_ACTIVITY_CLEAR_TASK)
         startActivity(intent)
     }
 
@@ -88,5 +91,4 @@ class LoginActivity : AppCompatActivity() {
             }
         })
     }
-
 }

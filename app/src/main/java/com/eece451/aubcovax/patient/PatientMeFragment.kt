@@ -11,14 +11,14 @@ import com.eece451.aubcovax.MainActivity
 import com.eece451.aubcovax.R
 import com.eece451.aubcovax.api.Authentication
 
-class PatientMe : Fragment() {
+class PatientMeFragment : Fragment() {
 
     private var logoutButton : Button? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
-        val view : View = inflater.inflate(R.layout.fragment_patient_me, container, false)
+        val view : View = inflater.inflate(R.layout.patient_me_fragment, container, false)
 
         logoutButton = view.findViewById(R.id.logoutButton)
         logoutButton?.setOnClickListener { _ -> logout() }
@@ -34,5 +34,4 @@ class PatientMe : Fragment() {
         startActivity(intent)
         activity?.finish()
     }
-
 }

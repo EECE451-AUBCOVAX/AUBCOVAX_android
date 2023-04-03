@@ -33,7 +33,7 @@ class SignupActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_signup)
+        setContentView(R.layout.signup_activity)
 
         firstNameEditText = findViewById(R.id.firstNameLayout)
         firstNameEditText?.setTextChangeListener()
@@ -156,5 +156,4 @@ class SignupActivity : AppCompatActivity() {
             textInputLayout?.error = errorMessage
         }
     }
-
 }
