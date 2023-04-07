@@ -13,7 +13,7 @@ class AdminMedicalPersonnelFragment : Fragment() {
 
     private var listview : ListView ? = null
     private var medicalPersonnel : ArrayList<MedicalPersonnelModel> ? = ArrayList()
-    private var adapter : MedicalPersonnelAdapter ? = null
+    private var adapter : AdminMedicalPersonnelAdapter ? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,7 +30,7 @@ class AdminMedicalPersonnelFragment : Fragment() {
         val view: View = inflater.inflate(R.layout.admin_medical_personnel_fragment, container, false)
 
         listview = view.findViewById(R.id.medicalPersonnelListView)
-        listview?.adapter = MedicalPersonnelAdapter(layoutInflater, medicalPersonnel!!)
+        listview?.adapter = AdminMedicalPersonnelAdapter(layoutInflater, medicalPersonnel!!)
 
         return view
     }

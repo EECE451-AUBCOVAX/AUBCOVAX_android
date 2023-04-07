@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".patient.PatientActivity">
+    tools:context=".medical_personnel.MedicalPersonnelActivity">
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/viewPager2"
@@ -17,7 +17,8 @@
         android:id="@+id/patientBottomNavigationView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:menu="@menu/patient_bottom_navigation_menu">
+        app:menu="@menu/medical_personnel_bottom_navigation_menu">
 
     </com.google.android.material.bottomnavigation.BottomNavigationView>
+
 </LinearLayout>

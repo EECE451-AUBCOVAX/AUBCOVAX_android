@@ -1,6 +1,8 @@
 package com.eece451.aubcovax.api.models
 
-class PatientModel {
+import java.io.Serializable
+
+class PatientModel : Serializable {
 
     var id : Int? = null
     var name : String? = null

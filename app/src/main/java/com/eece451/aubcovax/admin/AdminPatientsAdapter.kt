@@ -10,8 +10,8 @@ import android.widget.TextView
 import com.eece451.aubcovax.R
 import com.eece451.aubcovax.api.models.PatientModel
 
-class PatientsAdapter (private val inflater: LayoutInflater,
-                       private val patients: List<PatientModel>)
+class AdminPatientsAdapter (private val inflater: LayoutInflater,
+                            private val patients: List<PatientModel>)
     : BaseAdapter() {
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
@@ -20,7 +20,7 @@ class PatientsAdapter (private val inflater: LayoutInflater,
         val viewHolder: ViewHolder
 
         if (convertView == null) {
-            view = inflater.inflate(R.layout.patient_list_item, parent, false)
+            view = inflater.inflate(R.layout.admin_patient_list_item, parent, false)
             viewHolder = ViewHolder(view)
             view.tag = viewHolder
         }

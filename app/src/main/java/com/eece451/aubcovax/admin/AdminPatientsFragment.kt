@@ -12,8 +12,8 @@ import com.eece451.aubcovax.api.models.PatientModel
 class AdminPatientsFragment : Fragment() {
 
     private var listview : ListView? = null
-    private var patients : ArrayList<PatientModel> ? = ArrayList()
-    private var adapter : MedicalPersonnelAdapter ? = null
+    private var patients : ArrayList<PatientModel>? = ArrayList()
+    private var adapter : AdminMedicalPersonnelAdapter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,7 +32,7 @@ class AdminPatientsFragment : Fragment() {
         val view: View = inflater.inflate(R.layout.admin_patients_fragment, container, false)
 
         listview = view.findViewById(R.id.patientsListView)
-        listview?.adapter = PatientsAdapter(layoutInflater, patients!!)
+        listview?.adapter = AdminPatientsAdapter(layoutInflater, patients!!)
 
         return view
     }

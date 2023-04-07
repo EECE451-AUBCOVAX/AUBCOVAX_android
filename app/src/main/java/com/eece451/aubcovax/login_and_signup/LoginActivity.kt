@@ -70,6 +70,9 @@ class LoginActivity : AppCompatActivity() {
         else if (username == "admin" && password == "admin") {
             Authentication.saveRole("admin")
         }
+        else if (username == "staff" && password == "staff") {
+            Authentication.saveRole("medical_personnel")
+        }
 
         val intent = Intent(this, MainActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK

@@ -8,8 +8,8 @@ import android.widget.TextView
 import com.eece451.aubcovax.R
 import com.eece451.aubcovax.api.models.MedicalPersonnelModel
 
-class MedicalPersonnelAdapter (private val inflater: LayoutInflater,
-                               private val dataSource: List<MedicalPersonnelModel>)
+class AdminMedicalPersonnelAdapter (private val inflater: LayoutInflater,
+                                    private val dataSource: List<MedicalPersonnelModel>)
     : BaseAdapter() {
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
