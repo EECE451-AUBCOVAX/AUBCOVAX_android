@@ -31,12 +31,12 @@ class AdminPatientsAdapter (private val inflater: LayoutInflater,
 
         val patient = patients[position]
 
-        viewHolder.fullNameTextView.text = patient.name
+        viewHolder.fullNameTextView.text = "${patient.firstName} ${patient.lastName}"
         viewHolder.cardNumberTextView.text = patient.idCardNumber
         viewHolder.phoneNumberTextView.text = patient.phoneNumber
         viewHolder.emailTextView.text = patient.email
         viewHolder.dateOfBirthTextView.text = patient.dateOfBirth
-        viewHolder.cityAndCountryTextView.text = patient.cityAndCountry
+        viewHolder.cityAndCountryTextView.text = "${patient.city} - ${patient.country}"
         viewHolder.medicalConditionsTextView.text = patient.medicalConditions
 
         return view
@@ -47,7 +47,7 @@ class AdminPatientsAdapter (private val inflater: LayoutInflater,
     }
 
     override fun getItemId(position: Int): Long {
-        return patients[position].id?.toLong() ?: 0
+        return position.toLong()
     }
 
     override fun getCount(): Int {

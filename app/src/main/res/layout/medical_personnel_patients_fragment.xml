@@ -7,13 +7,13 @@
     android:orientation="vertical"
     tools:context=".medical_personnel.MedicalPersonnelPatientsFragment">
 
+
     <androidx.appcompat.widget.SearchView
         android:id="@+id/searchView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:iconifiedByDefault="true"
-        app:queryHint="Search" />
-
+        app:queryHint="Search by name or phone number" />
 
     <ListView
         android:id="@+id/patientsListView"

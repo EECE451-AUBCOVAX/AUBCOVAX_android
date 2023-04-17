@@ -23,10 +23,11 @@
             android:padding="16dp">
 
             <TextView
+                android:id="@+id/fullNameTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
-                android:text="Full Name"
+                android:text=""
                 android:textSize="20sp"
                 android:textStyle="bold" />
 
@@ -59,7 +60,7 @@
                         android:id="@+id/cardNumberTextView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="123456789"
+                        android:text=""
                         android:textSize="18sp" />
 
                     <TextView
@@ -94,7 +95,7 @@
                         android:id="@+id/phoneNumberTextView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="01 - 123 456"
+                        android:text=""
                         android:textSize="18sp" />
 
                     <TextView
@@ -129,7 +130,7 @@
                         android:id="@+id/emailTextView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="abc@efg.com"
+                        android:text=""
                         android:textSize="18sp" />
 
                     <TextView
@@ -164,7 +165,7 @@
                         android:id="@+id/dateOfBirthTextView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="01 - 01 - 2023"
+                        android:text=""
                         android:textSize="18sp" />
 
                     <TextView
@@ -199,7 +200,7 @@
                         android:id="@+id/cityAndCountryTextView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Lorem Ipsum"
+                        android:text=""
                         android:textSize="18sp" />
 
                     <TextView
@@ -234,7 +235,7 @@
                         android:id="@+id/medicalConditionsTextView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Lorem Ipsum"
+                        android:text=""
                         android:textSize="18sp" />
 
                     <TextView

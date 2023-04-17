@@ -1,7 +1,11 @@
 package com.eece451.aubcovax.api
 
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
+import androidx.core.content.ContextCompat.startActivity
+import com.eece451.aubcovax.MainActivity
 
 object Authentication {
 
@@ -41,5 +45,17 @@ object Authentication {
     fun clearRole() {
         this.role = null
         preferences?.edit()?.remove("ROLE")?.apply()
+    }
+
+    fun logout(context: Context?) {
+        clearRole()
+        clearToken()
+
+        val intent = Intent(context, MainActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+        context?.startActivity(intent)
+        if (context is Activity) {
+            context.finish()
+        }
     }
 }

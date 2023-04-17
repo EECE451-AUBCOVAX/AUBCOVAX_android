@@ -1,35 +1,66 @@
 package com.eece451.aubcovax.api.models
 
+import com.google.gson.annotations.SerializedName
 import java.io.Serializable
 
 class PatientModel : Serializable {
 
-    var id : Int? = null
-    var name : String? = null
-    var idCardNumber : String? = null
-    var phoneNumber : String? = null
+    @SerializedName("user_name")
+    var username : String? = null
+
+    @SerializedName("first_name")
+    var firstName: String? = null
+
+    @SerializedName("last_name")
+    var lastName: String? = null
+
+    @SerializedName("id_card")
+    var idCardNumber: String? = null
+
+    @SerializedName("phone_number")
+    var phoneNumber: String? = null
+
+    @SerializedName("email")
     var email: String? = null
-    var dateOfBirth : String? = null
-    var cityAndCountry : String? = null
-    var medicalConditions : String? = null
+
+    @SerializedName("password")
+    var password: String? = null
+
+    @SerializedName("date_of_birth")
+    var dateOfBirth: String? = null
+
+    @SerializedName("city")
+    var city: String? = null
+
+    @SerializedName("country")
+    var country: String? = null
+
+    @SerializedName("medical_conditions")
+    var medicalConditions: String? = null
 
     constructor(
-        id: Int?,
-        name: String?,
+        firstName: String?,
+        lastName: String?,
         idCardNumber: String?,
         phoneNumber: String?,
         email: String?,
+        username: String?,
+        password: String?,
         dateOfBirth: String?,
-        cityAndCountry: String?,
+        city: String?,
+        country: String?,
         medicalConditions: String?
     ) {
-        this.id = id
-        this.name = name
+        this.firstName = firstName
+        this.lastName = lastName
         this.idCardNumber = idCardNumber
         this.phoneNumber = phoneNumber
         this.email = email
+        this.username = username
+        this.password = password
         this.dateOfBirth = dateOfBirth
-        this.cityAndCountry = cityAndCountry
+        this.city = city
+        this.country = country
         this.medicalConditions = medicalConditions
     }
 }

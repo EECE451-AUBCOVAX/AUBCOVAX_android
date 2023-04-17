@@ -7,24 +7,24 @@ import android.view.ViewGroup
 import android.widget.ListView
 import androidx.fragment.app.Fragment
 import com.eece451.aubcovax.R
+import com.eece451.aubcovax.api.AUBCOVAXService
+import com.eece451.aubcovax.api.Authentication
+import com.eece451.aubcovax.api.models.MedicalPersonnelModel
 import com.eece451.aubcovax.api.models.PatientModel
+import com.google.android.material.snackbar.Snackbar
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class AdminPatientsFragment : Fragment() {
 
     private var listview : ListView? = null
     private var patients : ArrayList<PatientModel>? = ArrayList()
-    private var adapter : AdminMedicalPersonnelAdapter? = null
+    private var adapter : AdminPatientsAdapter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        for (i in 1 .. 9) {
-            patients?.add(PatientModel(i, "Patient $i", "$i", "0$i/123456",
-                "patient$i@email.com", "0$i-01-2023",
-                "Country $i, City $i", "Medical Conditions $i"))
-        }
-
-        adapter?.notifyDataSetChanged()
+        fillPatientsList()
     }
 
     override fun onCreateView(
@@ -32,8 +32,44 @@ class AdminPatientsFragment : Fragment() {
         val view: View = inflater.inflate(R.layout.admin_patients_fragment, container, false)
 
         listview = view.findViewById(R.id.patientsListView)
-        listview?.adapter = AdminPatientsAdapter(layoutInflater, patients!!)
+        adapter = AdminPatientsAdapter(layoutInflater, patients!!)
+        listview?.adapter = adapter
 
         return view
+    }
+
+    private fun fillPatientsList() {
+        if (Authentication.getToken() == null) {
+            Authentication.logout(requireContext())
+        }
+        AUBCOVAXService.AUBCOVAXApi().getAllPatients("Bearer ${Authentication.getToken()}")
+            .enqueue(object : Callback<List<PatientModel>> {
+
+                override fun onResponse(call: Call<List<PatientModel>>, response: Response<List<PatientModel>>) {
+                    if(response.isSuccessful) {
+                        patients?.addAll(response.body()!!)
+                        adapter?.notifyDataSetChanged()
+                    }
+                    else {
+                        Snackbar.make(
+                            requireView(),
+                            response.code().toString(),
+                            Snackbar.LENGTH_LONG
+                        ).show()
+                        if(response.code() == 401 || response.code() == 403) {
+                            Authentication.logout(requireContext())
+                        }
+                    }
+                }
+
+                override fun onFailure(call: Call<List<PatientModel>>, t: Throwable) {
+                    Snackbar.make(
+                        requireView(),
+                        t.message.toString(),
+                        Snackbar.LENGTH_LONG
+                    ).show()
+                }
+
+            })
     }
 }

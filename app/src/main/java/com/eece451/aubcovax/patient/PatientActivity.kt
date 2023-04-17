@@ -8,9 +8,9 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class PatientActivity : AppCompatActivity() {
 
-    private var viewpager2 : ViewPager2 ? = null
+    private var viewpager2 : ViewPager2? = null
     private var viewPagerAdapter : PatientViewPagerAdapter? = null
-    private var bottomNavigationView : BottomNavigationView ? = null
+    private var bottomNavigationView : BottomNavigationView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
 

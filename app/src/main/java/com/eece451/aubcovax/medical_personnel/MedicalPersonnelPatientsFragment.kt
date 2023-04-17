@@ -10,7 +10,13 @@ import android.widget.Filter
 import android.widget.ListView
 import androidx.appcompat.widget.SearchView
 import com.eece451.aubcovax.R
+import com.eece451.aubcovax.api.AUBCOVAXService
+import com.eece451.aubcovax.api.Authentication
 import com.eece451.aubcovax.api.models.PatientModel
+import com.google.android.material.snackbar.Snackbar
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -25,18 +31,7 @@ class MedicalPersonnelPatientsFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        for (i in 1 .. 9) {
-            patients?.add(
-                PatientModel(i, "Patient $i", "$i", "0$i/123456",
-                "patient$i@email.com", "0$i-01-2023",
-                "Country $i, City $i", "Medical Conditions $i")
-            )
-        }
-
-        originalPatientsList?.addAll(patients!!)
-
-        adapter?.notifyDataSetChanged()
+        fillPatientsList()
     }
 
     override fun onCreateView(
@@ -82,7 +77,7 @@ class MedicalPersonnelPatientsFragment : Fragment() {
                 constraint?.let {
                     val searchQuery = it.toString().lowercase(Locale.getDefault())
                     patients?.forEach { item ->
-                        if (item.name?.lowercase(Locale.getDefault())?.contains(searchQuery) == true
+                        if (item.firstName?.lowercase(Locale.getDefault())?.contains(searchQuery) == true
                             || item.phoneNumber?.lowercase(Locale.getDefault())?.contains(searchQuery) == true) {
                             filteredList.add(item)
                         }
@@ -104,5 +99,42 @@ class MedicalPersonnelPatientsFragment : Fragment() {
                 adapter?.notifyDataSetChanged()
             }
         }
+    }
+
+    private fun fillPatientsList() {
+        if (Authentication.getToken() == null) {
+            Authentication.logout(requireContext())
+        }
+        AUBCOVAXService.AUBCOVAXApi().getAllPatients("Bearer ${Authentication.getToken()}")
+            .enqueue(object : Callback<List<PatientModel>> {
+
+                override fun onResponse(
+                    call: Call<List<PatientModel>>,
+                    response: Response<List<PatientModel>>
+                ) {
+                    if (response.isSuccessful) {
+                        originalPatientsList?.addAll(response.body()!!)
+                        patients?.addAll(response.body()!!)
+                        adapter?.notifyDataSetChanged()
+                    } else {
+                        Snackbar.make(
+                            requireView(),
+                            response.code().toString(),
+                            Snackbar.LENGTH_LONG
+                        ).show()
+                        if (response.code() == 401 || response.code() == 403) {
+                            Authentication.logout(requireContext())
+                        }
+                    }
+                }
+
+                override fun onFailure(call: Call<List<PatientModel>>, t: Throwable) {
+                    Snackbar.make(
+                        requireView(),
+                        t.message.toString(),
+                        Snackbar.LENGTH_LONG
+                    ).show()
+                }
+            })
     }
 }

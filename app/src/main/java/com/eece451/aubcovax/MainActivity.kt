@@ -18,8 +18,8 @@ class MainActivity : AppCompatActivity() {
 
         val intent = when (Authentication.getRole()) {
             "admin" -> Intent(this, AdminActivity::class.java)
-            "medical_personnel" -> Intent(this, MedicalPersonnelActivity::class.java)
-            "patient" -> Intent(this, PatientActivity::class.java)
+            "personel" -> Intent(this, MedicalPersonnelActivity::class.java)
+            "user" -> Intent(this, PatientActivity::class.java)
             else -> Intent(this, LoginActivity::class.java)
         }
 

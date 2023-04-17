@@ -18,7 +18,7 @@ class MedicalPersonnelPatientsAdapter(private val inflater: LayoutInflater,
         val view: View = inflater.inflate(R.layout.medical_personnel_patient_list_item,
             parent, false)
 
-        view.findViewById<TextView>(R.id.fullNameTextView).text = patients[position].name
+        view.findViewById<TextView>(R.id.fullNameTextView).text = patients[position].firstName
         view.findViewById<TextView>(R.id.phoneNumberTextView).text = patients[position].phoneNumber
 
         return view
@@ -29,7 +29,7 @@ class MedicalPersonnelPatientsAdapter(private val inflater: LayoutInflater,
     }
 
     override fun getItemId(position: Int): Long {
-        return patients[position].id?.toLong() ?: 0
+        return position.toLong()
     }
 
     override fun getCount(): Int {

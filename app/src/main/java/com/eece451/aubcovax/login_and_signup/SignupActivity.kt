@@ -1,16 +1,25 @@
 package com.eece451.aubcovax.login_and_signup
 
 import android.app.DatePickerDialog
+import android.content.Context
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import com.eece451.aubcovax.R
+import com.eece451.aubcovax.api.AUBCOVAXService
+import com.eece451.aubcovax.api.models.PatientModel
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.text.SimpleDateFormat
 import java.util.*
-
 class SignupActivity : AppCompatActivity() {
 
     private val calendar = Calendar.getInstance()
@@ -19,7 +28,7 @@ class SignupActivity : AppCompatActivity() {
     private var firstNameEditText : TextInputLayout? = null
     private var lastNameEditText : TextInputLayout? = null
     private var dateOfBirthEditText : TextInputLayout? = null
-    private var idCarNumberEditText : TextInputLayout? = null
+    private var idCardNumberEditText : TextInputLayout? = null
     private var phoneNumberEditText : TextInputLayout? = null
     private var emailEditText : TextInputLayout? = null
     private var cityEditText : TextInputLayout? = null
@@ -45,8 +54,8 @@ class SignupActivity : AppCompatActivity() {
         dateOfBirthEditText?.editText?.setOnClickListener { _ -> showDatePickerDialog() }
         dateOfBirthEditText?.setTextChangeListener()
 
-        idCarNumberEditText = findViewById(R.id.idCardNumberLayout)
-        idCarNumberEditText?.setTextChangeListener()
+        idCardNumberEditText = findViewById(R.id.idCardNumberLayout)
+        idCardNumberEditText?.setTextChangeListener()
 
         phoneNumberEditText = findViewById(R.id.phoneNumberLayout)
         phoneNumberEditText?.setTextChangeListener()
@@ -95,7 +104,7 @@ class SignupActivity : AppCompatActivity() {
                 val calendar = Calendar.getInstance()
                 calendar.set(year, month, dayOfMonth)
                 val dateOfBirth = calendar.time
-                val dateFormat = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
+                val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
                 dateOfBirthEditText?.editText?.setText(dateFormat.format(dateOfBirth))
             },
             calendar.get(Calendar.YEAR),
@@ -108,11 +117,14 @@ class SignupActivity : AppCompatActivity() {
 
     private fun signup() {
 
+        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(signupButton?.windowToken, 0)
+
         val firstName = firstNameEditText?.editText?.text.toString()
         val lastName = lastNameEditText?.editText?.text.toString()
         val dateOfBirth = dateOfBirthEditText?.editText?.text.toString()
-        val idCarNumber = idCarNumberEditText?.editText?.text.toString()
-        val  phoneNumber = phoneNumberEditText?.editText?.text.toString()
+        val idCardNumber = idCardNumberEditText?.editText?.text.toString()
+        val phoneNumber = phoneNumberEditText?.editText?.text.toString()
         val email = emailEditText?.editText?.text.toString()
         val city = cityEditText?.editText?.text.toString()
         val country = countryEditText?.editText?.text.toString()
@@ -124,7 +136,7 @@ class SignupActivity : AppCompatActivity() {
         validate(firstName, firstNameEditText, "Please enter your first name")
         validate(lastName, lastNameEditText, "Please enter your last name")
         validate(dateOfBirth, dateOfBirthEditText, "Please enter your date of birth")
-        validate(idCarNumber, idCarNumberEditText, "Please enter your id card number")
+        validate(idCardNumber, idCardNumberEditText, "Please enter your id card number")
         validate(phoneNumber, phoneNumberEditText, "Please enter your phone number")
         validate(email, emailEditText, "Please enter your email")
         validate(city, cityEditText, "Please enter your city")
@@ -138,6 +150,62 @@ class SignupActivity : AppCompatActivity() {
         if(!inputIsValid) {
             return
         }
+
+        val patient = PatientModel(
+            firstName = firstName,
+            lastName = lastName,
+            idCardNumber = idCardNumber,
+            phoneNumber = phoneNumber,
+            email = email,
+            username = username,
+            password = password,
+            dateOfBirth = dateOfBirth,
+            city = city,
+            country = country,
+            medicalConditions = medicalConditions
+        )
+
+        signupButton?.isEnabled = false
+
+        AUBCOVAXService.AUBCOVAXApi().createPatientAccount(patient).enqueue(object: Callback<PatientModel> {
+
+            override fun onResponse(call: Call<PatientModel>, response: Response<PatientModel>) {
+                if(response.isSuccessful) {
+                    val snackbar = Snackbar.make(
+                        signupButton as View,
+                        "Account created. Please sign in.",
+                        Snackbar.LENGTH_LONG
+                    )
+                    snackbar.addCallback(object : Snackbar.Callback() {
+                        override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                            super.onDismissed(transientBottomBar, event)
+                            val intent = Intent(signupButton?.context, LoginActivity::class.java)
+                            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                            startActivity(intent)
+                        }
+                    })
+                    snackbar.show()
+                }
+                else {
+                    Snackbar.make(
+                        signupButton as View,
+                        response.errorBody()?.string().toString(),
+                        Snackbar.LENGTH_LONG
+                    ).show()
+                }
+                signupButton?.isEnabled = true
+            }
+
+            override fun onFailure(call: Call<PatientModel>, t: Throwable) {
+                Snackbar.make(
+                    signupButton as View,
+                    t.message.toString(),
+                    Snackbar.LENGTH_LONG
+                ).show()
+                signupButton?.isEnabled = true
+            }
+
+        })
     }
 
     private fun validate(input : String, textInputLayout : TextInputLayout?, errorMessage : String)
@@ -156,4 +224,5 @@ class SignupActivity : AppCompatActivity() {
             textInputLayout?.error = errorMessage
         }
     }
+
 }

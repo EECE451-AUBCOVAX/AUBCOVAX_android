@@ -14,8 +14,12 @@ class AdminMedicalPersonnelAdapter (private val inflater: LayoutInflater,
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
         val view: View = inflater.inflate(R.layout.medical_personnel_list_item, parent, false)
-        view.findViewById<TextView>(R.id.medicalPersonnelNameTextView).text = dataSource[position].name
+        view.findViewById<TextView>(R.id.medicalPersonnelNameTextView).text =
+            "${dataSource[position].firstName} ${dataSource[position].lastName}"
+        view.findViewById<TextView>(R.id.medicalPersonnelEmailTextView).text = dataSource[position].email
         view.findViewById<TextView>(R.id.medicalPersonnelPhoneNumberTextView).text = dataSource[position].phoneNumber
+        view.findViewById<TextView>(R.id.medicalPersonnelCityAndCountryTextView).text =
+            "${dataSource[position].city} - ${dataSource[position].country}"
         return view
     }
 
@@ -24,7 +28,7 @@ class AdminMedicalPersonnelAdapter (private val inflater: LayoutInflater,
     }
 
     override fun getItemId(position: Int): Long {
-        return dataSource[position].id?.toLong() ?: 0
+        return position.toLong()
     }
 
     override fun getCount(): Int {

@@ -30,12 +30,12 @@ class MedicalPersonnelPatientItemActivity : AppCompatActivity() {
 
         val patient = intent.getSerializableExtra("patient") as? PatientModel
 
-        fullNameTextView.text = patient?.name
+        fullNameTextView.text = patient?.firstName
         cardNumberTextView.text = patient?.idCardNumber
         phoneNumberTextView.text = patient?.phoneNumber
         emailTextView.text = patient?.email
         dateOfBirthTextView.text = patient?.dateOfBirth
-        cityAndCountryTextView.text = patient?.cityAndCountry
+        cityAndCountryTextView.text = patient?.city
         medicalConditionsTextView.text = patient?.medicalConditions
     }
 }
