@@ -1,16 +1,10 @@
 package com.eece451.aubcovax.api
 
-import com.eece451.aubcovax.api.models.PatientModel
-import com.eece451.aubcovax.api.models.LoginResponseModel
-import com.eece451.aubcovax.api.models.MedicalPersonnelModel
-import com.eece451.aubcovax.api.models.UserModel
+import com.eece451.aubcovax.api.models.*
 import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.http.Body
-import retrofit2.http.GET
-import retrofit2.http.Header
-import retrofit2.http.POST
+import retrofit2.http.*
 
 object AUBCOVAXService {
 
@@ -43,5 +37,11 @@ object AUBCOVAXService {
         @GET("/user/personel")
         fun getAllMedicalPersonnel(@Header("Authorization") authorization: String?) : Call<List<MedicalPersonnelModel>>
 
+        @GET("/user/reservation")
+        fun getMyDoses(@Header("Authorization") authorization: String?) : Call<List<DoseModel>>
+
+        @GET("personel/patienthistory")
+        fun getPatientDoses(@Header("Authorization") authorization: String?,
+                            @Query("user") user: String?) : Call<List<DoseModel>>
     }
 }

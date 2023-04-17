@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
+import com.eece451.aubcovax.ProgressBarManager
 import com.eece451.aubcovax.R
 import com.eece451.aubcovax.api.AUBCOVAXService
 import com.eece451.aubcovax.api.Authentication
@@ -18,6 +19,8 @@ import retrofit2.Callback
 import retrofit2.Response
 
 class PatientMeFragment : Fragment() {
+
+    private val progressBarManager = ProgressBarManager()
 
     private var fullNameTextView : TextView? = null
     private var cardNumberTextView : TextView? = null
@@ -53,6 +56,9 @@ class PatientMeFragment : Fragment() {
     }
 
     private fun getPatientInfo() {
+
+        progressBarManager.showProgressBar(requireActivity())
+
         if (Authentication.getToken() == null) {
             logout(requireContext())
         }
@@ -60,6 +66,7 @@ class PatientMeFragment : Fragment() {
             .enqueue(object : Callback<PatientModel> {
 
                 override fun onResponse(call: Call<PatientModel>, response: Response<PatientModel>) {
+                    progressBarManager.hideProgressBar()
                     if(response.isSuccessful) {
                         fullNameTextView?.text = "${response.body()?.firstName} ${response.body()?.lastName}"
                         cardNumberTextView?.text = response.body()?.idCardNumber
@@ -82,6 +89,7 @@ class PatientMeFragment : Fragment() {
                 }
 
                 override fun onFailure(call: Call<PatientModel>, t: Throwable) {
+                    progressBarManager.hideProgressBar()
                     Snackbar.make(
                         logoutButton as View,
                         t.message.toString(),

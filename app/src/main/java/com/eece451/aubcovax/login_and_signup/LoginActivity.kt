@@ -13,6 +13,7 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.eece451.aubcovax.MainActivity
+import com.eece451.aubcovax.ProgressBarManager
 import com.eece451.aubcovax.R
 import com.eece451.aubcovax.api.AUBCOVAXService
 import com.eece451.aubcovax.api.Authentication
@@ -25,6 +26,8 @@ import retrofit2.Callback
 import retrofit2.Response
 
 class LoginActivity : AppCompatActivity() {
+
+    private val progressBarManager = ProgressBarManager()
 
     private var usernameEditText: TextInputLayout? = null
     private var passwordEditText: TextInputLayout? = null
@@ -80,10 +83,12 @@ class LoginActivity : AppCompatActivity() {
         val user = UserModel(username, password)
 
         loginButton?.isEnabled = false
+        progressBarManager.showProgressBar(this)
 
         AUBCOVAXService.AUBCOVAXApi().login(user).enqueue(object: Callback<LoginResponseModel> {
 
             override fun onResponse(call: Call<LoginResponseModel>, response: Response<LoginResponseModel>) {
+                progressBarManager.hideProgressBar()
                 if(response.isSuccessful) {
                     response.body()?.role?.let { Authentication.saveRole(it) }
                     response.body()?.token?.let { Authentication.saveToken(it) }
@@ -113,6 +118,7 @@ class LoginActivity : AppCompatActivity() {
             }
 
             override fun onFailure(call: Call<LoginResponseModel>, t: Throwable) {
+                progressBarManager.hideProgressBar()
                 Snackbar.make(
                     loginButton as View,
                     t.message.toString(),

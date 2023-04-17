@@ -4,7 +4,6 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.viewpager2.widget.ViewPager2
 import com.eece451.aubcovax.R
-import com.eece451.aubcovax.patient.PatientViewPagerAdapter
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MedicalPersonnelActivity : AppCompatActivity() {

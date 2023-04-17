@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.ListView
 import androidx.appcompat.widget.SearchView
+import com.eece451.aubcovax.ProgressBarManager
 import com.eece451.aubcovax.R
 import com.eece451.aubcovax.api.AUBCOVAXService
 import com.eece451.aubcovax.api.Authentication
@@ -21,6 +22,8 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 class MedicalPersonnelPatientsFragment : Fragment() {
+
+    private val progressBarManager = ProgressBarManager()
 
     private var listview : ListView? = null
     private var patients : ArrayList<PatientModel>? = ArrayList()
@@ -102,16 +105,18 @@ class MedicalPersonnelPatientsFragment : Fragment() {
     }
 
     private fun fillPatientsList() {
+
+        progressBarManager.showProgressBar(requireActivity())
+
         if (Authentication.getToken() == null) {
             Authentication.logout(requireContext())
         }
         AUBCOVAXService.AUBCOVAXApi().getAllPatients("Bearer ${Authentication.getToken()}")
             .enqueue(object : Callback<List<PatientModel>> {
 
-                override fun onResponse(
-                    call: Call<List<PatientModel>>,
-                    response: Response<List<PatientModel>>
+                override fun onResponse(call: Call<List<PatientModel>>, response: Response<List<PatientModel>>
                 ) {
+                    progressBarManager.hideProgressBar()
                     if (response.isSuccessful) {
                         originalPatientsList?.addAll(response.body()!!)
                         patients?.addAll(response.body()!!)
@@ -129,6 +134,7 @@ class MedicalPersonnelPatientsFragment : Fragment() {
                 }
 
                 override fun onFailure(call: Call<List<PatientModel>>, t: Throwable) {
+                    progressBarManager.hideProgressBar()
                     Snackbar.make(
                         requireView(),
                         t.message.toString(),

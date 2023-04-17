@@ -1,12 +1,13 @@
 package com.eece451.aubcovax.admin
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
+import androidx.fragment.app.Fragment
+import com.eece451.aubcovax.ProgressBarManager
 import com.eece451.aubcovax.R
 import com.eece451.aubcovax.api.AUBCOVAXService
 import com.eece451.aubcovax.api.Authentication
@@ -18,6 +19,8 @@ import retrofit2.Callback
 import retrofit2.Response
 
 class AdminMeFragment : Fragment() {
+
+    private val progressBarManager = ProgressBarManager()
 
     private var fullNameTextView : TextView? = null
     private var cardNumberTextView : TextView? = null
@@ -47,6 +50,9 @@ class AdminMeFragment : Fragment() {
     }
 
     private fun getAdminInfo() {
+
+        progressBarManager.showProgressBar(requireActivity())
+
         if (Authentication.getToken() == null) {
             logout(requireContext())
         }
@@ -54,6 +60,7 @@ class AdminMeFragment : Fragment() {
             .enqueue(object : Callback<PatientModel> {
 
                 override fun onResponse(call: Call<PatientModel>, response: Response<PatientModel>) {
+                    progressBarManager.hideProgressBar()
                     if(response.isSuccessful) {
                         fullNameTextView?.text = "${response.body()?.firstName} ${response.body()?.lastName}"
                         cardNumberTextView?.text = response.body()?.idCardNumber
@@ -73,6 +80,7 @@ class AdminMeFragment : Fragment() {
                 }
 
                 override fun onFailure(call: Call<PatientModel>, t: Throwable) {
+                    progressBarManager.hideProgressBar()
                     Snackbar.make(
                         logoutButton as View,
                         t.message.toString(),

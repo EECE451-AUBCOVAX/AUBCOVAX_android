@@ -10,6 +10,7 @@ import android.text.TextWatcher
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
+import com.eece451.aubcovax.ProgressBarManager
 import com.eece451.aubcovax.R
 import com.eece451.aubcovax.api.AUBCOVAXService
 import com.eece451.aubcovax.api.models.PatientModel
@@ -22,6 +23,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 class SignupActivity : AppCompatActivity() {
 
+    private val progressBarManager = ProgressBarManager()
     private val calendar = Calendar.getInstance()
 
     private var inputIsValid = true
@@ -166,10 +168,12 @@ class SignupActivity : AppCompatActivity() {
         )
 
         signupButton?.isEnabled = false
+        progressBarManager.showProgressBar(this)
 
         AUBCOVAXService.AUBCOVAXApi().createPatientAccount(patient).enqueue(object: Callback<PatientModel> {
 
             override fun onResponse(call: Call<PatientModel>, response: Response<PatientModel>) {
+                progressBarManager.hideProgressBar()
                 if(response.isSuccessful) {
                     val snackbar = Snackbar.make(
                         signupButton as View,
@@ -197,6 +201,7 @@ class SignupActivity : AppCompatActivity() {
             }
 
             override fun onFailure(call: Call<PatientModel>, t: Throwable) {
+                progressBarManager.hideProgressBar()
                 Snackbar.make(
                     signupButton as View,
                     t.message.toString(),

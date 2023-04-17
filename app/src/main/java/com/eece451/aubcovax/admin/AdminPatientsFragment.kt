@@ -6,10 +6,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ListView
 import androidx.fragment.app.Fragment
+import com.eece451.aubcovax.ProgressBarManager
 import com.eece451.aubcovax.R
 import com.eece451.aubcovax.api.AUBCOVAXService
 import com.eece451.aubcovax.api.Authentication
-import com.eece451.aubcovax.api.models.MedicalPersonnelModel
 import com.eece451.aubcovax.api.models.PatientModel
 import com.google.android.material.snackbar.Snackbar
 import retrofit2.Call
@@ -21,6 +21,8 @@ class AdminPatientsFragment : Fragment() {
     private var listview : ListView? = null
     private var patients : ArrayList<PatientModel>? = ArrayList()
     private var adapter : AdminPatientsAdapter? = null
+
+    private val progressBarManager = ProgressBarManager()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,6 +41,9 @@ class AdminPatientsFragment : Fragment() {
     }
 
     private fun fillPatientsList() {
+
+        progressBarManager.showProgressBar(requireActivity())
+
         if (Authentication.getToken() == null) {
             Authentication.logout(requireContext())
         }
@@ -46,6 +51,7 @@ class AdminPatientsFragment : Fragment() {
             .enqueue(object : Callback<List<PatientModel>> {
 
                 override fun onResponse(call: Call<List<PatientModel>>, response: Response<List<PatientModel>>) {
+                    progressBarManager.hideProgressBar()
                     if(response.isSuccessful) {
                         patients?.addAll(response.body()!!)
                         adapter?.notifyDataSetChanged()
@@ -63,6 +69,7 @@ class AdminPatientsFragment : Fragment() {
                 }
 
                 override fun onFailure(call: Call<List<PatientModel>>, t: Throwable) {
+                    progressBarManager.hideProgressBar()
                     Snackbar.make(
                         requireView(),
                         t.message.toString(),
