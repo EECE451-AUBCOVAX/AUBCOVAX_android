@@ -43,5 +43,8 @@ object AUBCOVAXService {
         @GET("personel/patienthistory")
         fun getPatientDoses(@Header("Authorization") authorization: String?,
                             @Query("user") user: String?) : Call<List<DoseModel>>
+
+        @POST("user/reserve")
+        fun reserveFirstAppointment(@Header("Authorization") authorization: String?) : Call<Any>
     }
 }

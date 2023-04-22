@@ -10,10 +10,14 @@ import android.text.TextWatcher
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
+import com.eece451.aubcovax.MainActivity
 import com.eece451.aubcovax.ProgressBarManager
 import com.eece451.aubcovax.R
 import com.eece451.aubcovax.api.AUBCOVAXService
+import com.eece451.aubcovax.api.Authentication
+import com.eece451.aubcovax.api.models.LoginResponseModel
 import com.eece451.aubcovax.api.models.PatientModel
+import com.eece451.aubcovax.api.models.UserModel
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
 import retrofit2.Call
@@ -173,24 +177,11 @@ class SignupActivity : AppCompatActivity() {
         AUBCOVAXService.AUBCOVAXApi().createPatientAccount(patient).enqueue(object: Callback<PatientModel> {
 
             override fun onResponse(call: Call<PatientModel>, response: Response<PatientModel>) {
-                progressBarManager.hideProgressBar()
                 if(response.isSuccessful) {
-                    val snackbar = Snackbar.make(
-                        signupButton as View,
-                        "Account created. Please sign in.",
-                        Snackbar.LENGTH_LONG
-                    )
-                    snackbar.addCallback(object : Snackbar.Callback() {
-                        override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
-                            super.onDismissed(transientBottomBar, event)
-                            val intent = Intent(signupButton?.context, LoginActivity::class.java)
-                            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-                            startActivity(intent)
-                        }
-                    })
-                    snackbar.show()
+                    loginAndReserveFirstAppointment(UserModel(username, password))
                 }
                 else {
+                    progressBarManager.hideProgressBar()
                     Snackbar.make(
                         signupButton as View,
                         response.errorBody()?.string().toString(),
@@ -228,6 +219,38 @@ class SignupActivity : AppCompatActivity() {
             inputIsValid = false
             textInputLayout?.error = errorMessage
         }
+    }
+
+    private fun loginAndReserveFirstAppointment(user: UserModel) {
+
+        AUBCOVAXService.AUBCOVAXApi().login(user).enqueue(object: Callback<LoginResponseModel> {
+
+            override fun onResponse(call: Call<LoginResponseModel>, response: Response<LoginResponseModel>) {
+
+
+                if(response.isSuccessful) {
+
+                    response.body()?.role?.let { Authentication.saveRole(it) }
+                    response.body()?.token?.let { Authentication.saveToken(it) }
+
+                    AUBCOVAXService.AUBCOVAXApi().reserveFirstAppointment(
+                        "Bearer ${Authentication.getToken()}"
+                    ).enqueue(object: Callback<Any>{
+
+                        override fun onResponse(call: Call<Any>, response: Response<Any>) {
+                            val intent = Intent(signupButton?.context, MainActivity::class.java)
+                            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                            startActivity(intent)
+                            finish()
+                        }
+
+                        override fun onFailure(call: Call<Any>, t: Throwable) {}
+                    })
+                }
+            }
+
+            override fun onFailure(call: Call<LoginResponseModel>, t: Throwable) {}
+        })
     }
 
 }
