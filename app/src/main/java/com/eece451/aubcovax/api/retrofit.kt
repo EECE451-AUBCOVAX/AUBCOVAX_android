@@ -1,5 +1,6 @@
 package com.eece451.aubcovax.api
 
+import com.eece451.aubcovax.api.dtos.MedicalPersonnelDoseDto
 import com.eece451.aubcovax.api.models.*
 import retrofit2.Call
 import retrofit2.Retrofit
@@ -46,5 +47,15 @@ object AUBCOVAXService {
 
         @POST("user/reserve")
         fun reserveFirstAppointment(@Header("Authorization") authorization: String?) : Call<Any>
+
+        @POST("personel/reserve")
+        fun reserveSecondAppointment(@Header("Authorization") authorization: String?,
+                                     @Body medicalPersonnelDoseDto : MedicalPersonnelDoseDto
+                                     ) : Call<String>
+
+        @POST("personel/dose_confirm")
+        fun confirmDose(@Header("Authorization") authorization: String?,
+                        @Body medicalPersonnelDoseDto : MedicalPersonnelDoseDto
+        ) : Call<Any>
     }
 }
