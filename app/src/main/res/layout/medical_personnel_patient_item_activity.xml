@@ -271,6 +271,7 @@
                 android:layout_margin="16dp"
                 android:backgroundTint="#009688"
                 android:text="Book an appointment for dose #2"
+                android:textAllCaps="false"
                 android:textColor="#FFFFFF" />
 
 
@@ -281,6 +282,7 @@
                 android:layout_margin="16dp"
                 android:backgroundTint="#3F51B5"
                 android:text="Email the patient a certificate"
+                android:textAllCaps="false"
                 android:textColor="#FFFFFF" />
 
         </LinearLayout>

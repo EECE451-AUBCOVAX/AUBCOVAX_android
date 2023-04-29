@@ -144,14 +144,13 @@ class SignupActivity : AppCompatActivity() {
         validate(dateOfBirth, dateOfBirthEditText, "Please enter your date of birth")
         validate(idCardNumber, idCardNumberEditText, "Please enter your id card number")
         validate(phoneNumber, phoneNumberEditText, "Please enter your phone number")
-        validate(email, emailEditText, "Please enter your email")
+        validateEmail(email, emailEditText)
         validate(city, cityEditText, "Please enter your city")
         validate(country, countryEditText, "Please enter your country")
         validate(medicalConditions, medicalConditionsEditText, "Please enter your medical conditions")
         validate(username, usernameEditText, "Please enter your username")
         validate(password, passwordEditText, "Please enter your password")
-        validateConfirmedPassword(password, confirmPassword, confirmPasswordEditText,
-            "Passwords do not match")
+        validateConfirmedPassword(password, confirmPassword, confirmPasswordEditText)
 
         if(!inputIsValid) {
             return
@@ -204,20 +203,26 @@ class SignupActivity : AppCompatActivity() {
         })
     }
 
-    private fun validate(input : String, textInputLayout : TextInputLayout?, errorMessage : String)
-    {
+    private fun validate(input : String, textInputLayout : TextInputLayout?, errorMessage : String) {
         if (input.isBlank()) {
             inputIsValid = false
             textInputLayout?.error = errorMessage
         }
     }
 
+    private fun validateEmail(email: String, textInputLayout : TextInputLayout?) {
+        val emailRegex = Regex("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}\$")
+        if(!emailRegex.matches(email)) {
+            inputIsValid = false
+            textInputLayout?.error = "Please enter a valid email"
+        }
+    }
+
     private fun validateConfirmedPassword(password : String, confirmedPassword : String,
-                                          textInputLayout : TextInputLayout?, errorMessage : String)
-    {
+                                          textInputLayout : TextInputLayout?) {
         if (password != confirmedPassword) {
             inputIsValid = false
-            textInputLayout?.error = errorMessage
+            textInputLayout?.error = "Passwords do not match"
         }
     }
 

@@ -255,6 +255,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="15dp"
         android:paddingHorizontal="50dp"
-        android:text="Logout" />
+        android:text="Logout"
+        android:textAllCaps="false"/>
 
 </LinearLayout>

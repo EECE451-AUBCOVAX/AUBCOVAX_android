@@ -198,6 +198,7 @@
                 android:layout_height="wrap_content"
                 android:backgroundTint="#4CAF50"
                 android:text="Confirm"
+                android:textAllCaps="false"
                 android:visibility="gone"
                 android:textColor="#FFFFFF" />
 
