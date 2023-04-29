@@ -57,5 +57,8 @@ object AUBCOVAXService {
         fun confirmDose(@Header("Authorization") authorization: String?,
                         @Body medicalPersonnelDoseDto : MedicalPersonnelDoseDto
         ) : Call<Any>
+
+        @GET("personel/reservation")
+        fun getPersonnelAssignedDoses(@Header("Authorization") authorization: String?) : Call<List<DoseModel>>
     }
 }

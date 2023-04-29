@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import com.eece451.aubcovax.R
 import com.eece451.aubcovax.api.models.DoseModel
@@ -16,6 +17,10 @@ class PatientDosesAdapter (private val inflater: LayoutInflater,
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
         val view: View = inflater.inflate(R.layout.patient_dose_list_item, parent, false)
+
+        view.findViewById<LinearLayout>(R.id.doseAdministeredByLayout)?.visibility = View.VISIBLE
+        view.findViewById<LinearLayout>(R.id.patientNameLayout)?.visibility = View.GONE
+
         view.findViewById<TextView>(R.id.doseAdministeredByTextView).text =
             "${dataSource[position].medicalPersonnelName}"
         view.findViewById<TextView>(R.id.doseDateAndTimeTextView).text =

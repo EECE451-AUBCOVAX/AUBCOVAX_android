@@ -11,12 +11,13 @@ class MedicalPersonnelViewPagerAdapter(fm: FragmentManager, lifecycle: Lifecycle
     override fun createFragment(position: Int): Fragment {
         return when (position) {
             0 -> { MedicalPersonnelPatientsFragment() }
-            1 -> { MedicalPersonnelMeFragment() }
+            1 -> { MedicalPersonnelTasksFragment() }
+            2 -> { MedicalPersonnelMeFragment() }
             else -> MedicalPersonnelMeFragment()
         }
     }
 
     override fun getItemCount(): Int {
-        return 2
+        return 3
     }
 }

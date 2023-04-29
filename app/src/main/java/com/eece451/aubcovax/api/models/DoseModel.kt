@@ -13,6 +13,9 @@ class DoseModel {
     @SerializedName("personel")
     var medicalPersonnelName: String? = null
 
+    @SerializedName("patient")
+    var patientName: String? = null
+
     @SerializedName("status")
     var status: String? = null
 

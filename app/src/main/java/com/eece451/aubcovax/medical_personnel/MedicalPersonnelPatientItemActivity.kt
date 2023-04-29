@@ -19,16 +19,20 @@ import com.google.android.material.snackbar.Snackbar
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.text.SimpleDateFormat
 import java.util.*
 
 class MedicalPersonnelPatientItemActivity : AppCompatActivity(), DatePickerDialog.OnDateSetListener  {
 
     private val context: Context = this
     private var timeDialog: AlertDialog? = null
-    private val progressBarManager = ProgressBarManager()
+    private val patientDosesProgressBarManager = ProgressBarManager()
+    private val personnelAssignedDosesProgressBarManager = ProgressBarManager()
 
     private var listview : ListView? = null
     private var doses : ArrayList<DoseModel>? = ArrayList()
+    private var personnelAssignedDoses : ArrayList<DoseModel>? = ArrayList()
+    private var personnelAssignedDosesMap = HashMap<String, String>()
     private var adapter : MedicalPersonnelDosesAdapter? = null
 
     var fullNameTextView: TextView? = null
@@ -70,6 +74,7 @@ class MedicalPersonnelPatientItemActivity : AppCompatActivity(), DatePickerDialo
         cityAndCountryTextView = findViewById(R.id.cityAndCountryTextView)
         medicalConditionsTextView = findViewById(R.id.medicalConditionsTextView)
 
+        getPersonnelAssignedDoses()
 
         fillPatientDosesList(patient?.username)
         fullNameTextView?.text = patient?.firstName
@@ -94,15 +99,12 @@ class MedicalPersonnelPatientItemActivity : AppCompatActivity(), DatePickerDialo
         timeDialog = AlertDialog.Builder(context)
             .setTitle("Set Appointment Time")
             .setView(R.layout.dialog_time_picker)
-            .setPositiveButton("OK") { _, _ ->
-                selectedHour = hourPicker.value
-                selectedMinute = minutePicker.value * 30
-                bookAppointment(patient?.username)
-            }
+            .setPositiveButton("OK", null)
             .setNegativeButton("Cancel") { _, _ -> }
             .create()
 
         timeDialog?.setOnShowListener {
+
             val hourPickerLayout = timeDialog?.findViewById<View>(R.id.hour_picker_layout) as LinearLayout
             val minutePickerLayout = timeDialog?.findViewById<View>(R.id.minute_picker_layout) as LinearLayout
 
@@ -114,7 +116,37 @@ class MedicalPersonnelPatientItemActivity : AppCompatActivity(), DatePickerDialo
 
             hourPickerLayout.addView(hourPicker)
             minutePickerLayout.addView(minutePicker)
+
+            val dialogView = timeDialog?.findViewById<View>(android.R.id.content)
+
+            val positiveButton = timeDialog?.getButton(AlertDialog.BUTTON_POSITIVE)
+            positiveButton?.setOnClickListener {
+                selectedHour = hourPicker.value
+                selectedMinute = minutePicker.value * 30
+
+                val selectedDate : String = getSelectedDate()
+                val selectedTime : String = getSelectedTime()
+
+                val isAppointmentAvailable: Boolean = checkIfAppointmentIsAvailable(selectedDate, selectedTime)
+                if(isAppointmentAvailable) {
+                    bookAppointment(patient?.username, selectedDate, selectedTime)
+                    timeDialog?.dismiss()
+                }
+                else {
+                    val snackbar = Snackbar.make(
+                        dialogView!!,
+                        "An appointment is already booked on " + getSelectedDate() + " at " + getSelectedTime(),
+                        800
+                    )
+                    snackbar.view.elevation = 8f
+                    snackbar.show()
+                }
+            }
         }
+    }
+
+    private fun checkIfAppointmentIsAvailable(selectedDate: String, selectedTime: String): Boolean {
+        return personnelAssignedDosesMap["$selectedDate-$selectedTime:00"] == null
     }
 
     private fun getHourPicker(): NumberPicker {
@@ -125,17 +157,11 @@ class MedicalPersonnelPatientItemActivity : AppCompatActivity(), DatePickerDialo
         }
     }
 
-    public fun restart() {
-        val intent = intent
-        finish()
-        startActivity(intent)
-    }
-
     private fun getMinutePicker(): NumberPicker {
         return NumberPicker(context).apply {
             minValue = 0
             maxValue = 1
-            displayedValues = arrayOf("0", "30")
+            displayedValues = arrayOf("00", "30")
         }
     }
 
@@ -155,22 +181,27 @@ class MedicalPersonnelPatientItemActivity : AppCompatActivity(), DatePickerDialo
         timeDialog?.show()
     }
 
-    private fun bookAppointment(patientUsername: String?) {
-        println("$selectedYear - $selectedMonth - $selectedDay at $selectedHour:$selectedMinute")
-        println("##############################################################################################")
+    private fun getSelectedTime() : String {
+        var selectedTime = if(selectedHour < 10) "0$selectedHour" else "$selectedHour"
+        selectedTime += (if(selectedMinute == 0) ":00" else ":30")
+        return "$selectedTime"
+    }
 
-        val date = "$selectedYear-$selectedMonth-$selectedDay"
-        var time = "$selectedHour:"
-        time += if(selectedMinute == 0) {
-            "00"
-        }
-        else {
-            "30"
-        }
+    private fun getSelectedDate() : String {
+        return convertDateFormat("$selectedYear-$selectedMonth-$selectedDay")
+    }
 
-        val dose = MedicalPersonnelDoseDto(patientUsername, date, time)
+    private fun bookAppointment(patientUsername: String?, selectedDate: String, selectedTime: String) {
 
-        progressBarManager.showProgressBar(this)
+        println("#########################################################################")
+        println(patientUsername)
+        println(selectedDate)
+        println(selectedTime)
+        println("#########################################################################")
+
+        val dose = MedicalPersonnelDoseDto(patientUsername, selectedDate, selectedTime)
+
+        patientDosesProgressBarManager.showProgressBar(this)
 
         AUBCOVAXService.AUBCOVAXApi().reserveSecondAppointment(
             "Bearer ${Authentication.getToken()}", dose)
@@ -179,34 +210,41 @@ class MedicalPersonnelPatientItemActivity : AppCompatActivity(), DatePickerDialo
                 override fun onResponse(call: Call<String>, response: Response<String>) {
 
                     println("#########################################################################")
-                    println(response.body())
-                    progressBarManager.hideProgressBar()
+                    println("inside onResponse")
+                    println("#########################################################################")
 
-                    val intent = intent
-                    finish()
-                    startActivity(intent)
+                    patientDosesProgressBarManager.hideProgressBar()
 
-//                    if(response.isSuccessful) {
-//                        val intent = intent
-//                        finish()
-//                        startActivity(intent)
-//                    }
-//                    else {
-//                        if(response.code() == 401 || response.code() == 403) {
-//                            Authentication.logout(context)
-//                        }
-//                        else {
-//                            Snackbar.make(
-//                                fullNameTextView as View,
-//                               response.errorBody().toString(),
-//                                Snackbar.LENGTH_LONG
-//                            ).show()
-//                        }
-//                    }
+                    if(response.isSuccessful) {
+                        println("#########################################################################")
+                        println("inside isSuccessful")
+                        println("#########################################################################")
+                        val intent = intent
+                        finish()
+                        startActivity(intent)
+                    }
+                    else {
+                        println("#########################################################################")
+                        println("inside else")
+                        println("#########################################################################")
+                        if(response.code() == 401 || response.code() == 403) {
+                            Authentication.logout(context)
+                        }
+                        else {
+                            Snackbar.make(
+                                fullNameTextView as View,
+                               response.errorBody().toString(),
+                                Snackbar.LENGTH_LONG
+                            ).show()
+                        }
+                    }
                 }
 
                 override fun onFailure(call: Call<String>, t: Throwable) {
-                    progressBarManager.hideProgressBar()
+                    println("#########################################################################")
+                    println("inside onFailure")
+                    println("#########################################################################")
+                    patientDosesProgressBarManager.hideProgressBar()
                     Snackbar.make(
                         fullNameTextView as View,
                         t.message.toString(),
@@ -216,8 +254,8 @@ class MedicalPersonnelPatientItemActivity : AppCompatActivity(), DatePickerDialo
             })
     }
 
-    fun fillPatientDosesList(patientUsername: String?) {
-        progressBarManager.showProgressBar(this)
+    private fun fillPatientDosesList(patientUsername: String?) {
+        patientDosesProgressBarManager.showProgressBar(this)
 
         if (Authentication.getToken() == null) {
             Authentication.logout(context)
@@ -229,7 +267,7 @@ class MedicalPersonnelPatientItemActivity : AppCompatActivity(), DatePickerDialo
                 override fun onResponse(call: Call<List<DoseModel>>,
                                         response: Response<List<DoseModel>>
                 ) {
-                    progressBarManager.hideProgressBar()
+                    patientDosesProgressBarManager.hideProgressBar()
                     if(response.isSuccessful) {
                         doses?.addAll(response.body()!!)
                         adapter?.notifyDataSetChanged()
@@ -248,7 +286,7 @@ class MedicalPersonnelPatientItemActivity : AppCompatActivity(), DatePickerDialo
                 }
 
                 override fun onFailure(call: Call<List<DoseModel>>, t: Throwable) {
-                    progressBarManager.hideProgressBar()
+                    patientDosesProgressBarManager.hideProgressBar()
                     Snackbar.make(
                         fullNameTextView as View,
                         t.message.toString(),
@@ -257,6 +295,57 @@ class MedicalPersonnelPatientItemActivity : AppCompatActivity(), DatePickerDialo
                 }
 
             })
+    }
+
+    private fun getPersonnelAssignedDoses() {
+        personnelAssignedDosesProgressBarManager.showProgressBar(this)
+
+        if (Authentication.getToken() == null) {
+            Authentication.logout(context)
+        }
+        AUBCOVAXService.AUBCOVAXApi().getPersonnelAssignedDoses(
+            "Bearer ${Authentication.getToken()}")
+            .enqueue(object : Callback<List<DoseModel>> {
+
+                override fun onResponse(call: Call<List<DoseModel>>,
+                                        response: Response<List<DoseModel>>
+                ) {
+                    personnelAssignedDosesProgressBarManager.hideProgressBar()
+                    if(response.isSuccessful) {
+                        personnelAssignedDoses?.addAll(response.body()!!)
+                        for (dose in personnelAssignedDoses!!) {
+                            val dateTime = "${dose.date}-${dose.time}"
+                            personnelAssignedDosesMap[dateTime] = ""
+                        }
+                    }
+                    else {
+                        Snackbar.make(
+                            fullNameTextView as View,
+                            response.code().toString(),
+                            Snackbar.LENGTH_LONG
+                        ).show()
+                        if(response.code() == 401 || response.code() == 403) {
+                            Authentication.logout(context)
+                        }
+                    }
+                }
+
+                override fun onFailure(call: Call<List<DoseModel>>, t: Throwable) {
+                    personnelAssignedDosesProgressBarManager.hideProgressBar()
+                    Snackbar.make(
+                        fullNameTextView as View,
+                        t.message.toString(),
+                        Snackbar.LENGTH_LONG
+                    ).show()
+                }
+            })
+    }
+
+    private fun convertDateFormat(date: String): String {
+        val inputFormat = SimpleDateFormat("yyyy-M-d", Locale.getDefault())
+        val outputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val parsedDate: Date = inputFormat.parse(date)
+        return outputFormat.format(parsedDate)
     }
 
     private fun setListViewHeightBasedOnChildren(listView: ListView?) {

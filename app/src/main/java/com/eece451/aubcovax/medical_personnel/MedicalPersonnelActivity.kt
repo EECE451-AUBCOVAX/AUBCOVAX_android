@@ -27,8 +27,12 @@ class MedicalPersonnelActivity : AppCompatActivity() {
                     viewpager2?.currentItem = 0
                     true
                 }
-                R.id.me -> {
+                R.id.tasks -> {
                     viewpager2?.currentItem = 1
+                    true
+                }
+                R.id.me -> {
+                    viewpager2?.currentItem = 2
                     true
                 }
                 else -> false
@@ -39,7 +43,8 @@ class MedicalPersonnelActivity : AppCompatActivity() {
             override fun onPageSelected(position: Int) {
                 when (position) {
                     0 -> bottomNavigationView?.selectedItemId = R.id.patients
-                    1 -> bottomNavigationView?.selectedItemId = R.id.me
+                    1 -> bottomNavigationView?.selectedItemId = R.id.tasks
+                    2 -> bottomNavigationView?.selectedItemId = R.id.me
                 }
             }
         })
