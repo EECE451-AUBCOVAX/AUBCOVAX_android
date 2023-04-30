@@ -28,12 +28,16 @@ class MedicalPersonnelPatientsFragment : Fragment() {
     private var listview : ListView? = null
     private var patients : ArrayList<PatientModel>? = ArrayList()
     private var originalPatientsList : ArrayList<PatientModel>? = ArrayList()
+    private var filteredList : ArrayList<PatientModel>? = ArrayList()
     private var adapter : MedicalPersonnelPatientsAdapter? = null
     private var filter: Filter? = null
     private var searchView : SearchView? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    override fun onResume() {
+        super.onResume()
+        originalPatientsList?.clear()
+        patients?.clear()
+        adapter?.notifyDataSetChanged()
         fillPatientsList()
     }
 
@@ -49,7 +53,10 @@ class MedicalPersonnelPatientsFragment : Fragment() {
         listview = view.findViewById(R.id.patientsListView)
         listview?.adapter = adapter
         listview?.setOnItemClickListener { _, view, position, _ ->
-            val selectedPatient = patients!![position]
+            var selectedPatient = patients!![position]
+            if(!searchView?.query.isNullOrEmpty()) {
+                selectedPatient = filteredList!![position]
+            }
             val intent = Intent(requireContext(), MedicalPersonnelPatientItemActivity::class.java)
             intent.putExtra("patient", selectedPatient)
             startActivity(intent)
@@ -76,13 +83,13 @@ class MedicalPersonnelPatientsFragment : Fragment() {
         return object : Filter() {
             override fun performFiltering(constraint: CharSequence?): FilterResults {
                 patients = originalPatientsList
-                val filteredList = ArrayList<PatientModel>()
+                filteredList?.clear()
                 constraint?.let {
                     val searchQuery = it.toString().lowercase(Locale.getDefault())
                     patients?.forEach { item ->
                         if (item.firstName?.lowercase(Locale.getDefault())?.contains(searchQuery) == true
                             || item.phoneNumber?.lowercase(Locale.getDefault())?.contains(searchQuery) == true) {
-                            filteredList.add(item)
+                            filteredList?.add(item)
                         }
                     }
                 }

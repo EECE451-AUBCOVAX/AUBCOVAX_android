@@ -13,9 +13,11 @@ import com.eece451.aubcovax.R
 import com.eece451.aubcovax.api.AUBCOVAXService
 import com.eece451.aubcovax.api.Authentication
 import com.eece451.aubcovax.api.dtos.MedicalPersonnelDoseDto
+import com.eece451.aubcovax.api.dtos.ResponseMessageDto
 import com.eece451.aubcovax.api.models.DoseModel
 import com.eece451.aubcovax.api.models.PatientModel
 import com.google.android.material.snackbar.Snackbar
+import com.google.gson.Gson
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -45,6 +47,7 @@ class MedicalPersonnelPatientItemActivity : AppCompatActivity(), DatePickerDialo
 
     private var bookAppointmentButton : Button? = null
 
+    private var calendar: Calendar? = null
     private var day = -1
     private var month = -1
     private var year = -1
@@ -86,10 +89,11 @@ class MedicalPersonnelPatientItemActivity : AppCompatActivity(), DatePickerDialo
         medicalConditionsTextView?.text = patient?.medicalConditions
 
         bookAppointmentButton = findViewById(R.id.bookAppointmentButton)
+        bookAppointmentButton?.visibility = View.GONE
         bookAppointmentButton?.setOnClickListener {
-            val calendar: Calendar = getCalendar()
+            calendar = getCalendar()
             val datePickerDialog = DatePickerDialog(this, this, year, month, day)
-            datePickerDialog.datePicker.minDate = calendar.timeInMillis
+            datePickerDialog.datePicker.minDate = calendar?.timeInMillis!!
             datePickerDialog.show()
         }
 
@@ -133,13 +137,11 @@ class MedicalPersonnelPatientItemActivity : AppCompatActivity(), DatePickerDialo
                     timeDialog?.dismiss()
                 }
                 else {
-                    val snackbar = Snackbar.make(
+                    Snackbar.make(
                         dialogView!!,
                         "An appointment is already booked on " + getSelectedDate() + " at " + getSelectedTime(),
                         800
-                    )
-                    snackbar.view.elevation = 8f
-                    snackbar.show()
+                    ).show()
                 }
             }
         }
@@ -167,6 +169,7 @@ class MedicalPersonnelPatientItemActivity : AppCompatActivity(), DatePickerDialo
 
     private fun getCalendar(): Calendar {
         val calendar = Calendar.getInstance()
+        calendar.time = SimpleDateFormat("yyyy-MM-dd").parse(doses?.first()?.date)
         calendar.add(Calendar.WEEK_OF_YEAR, 2)
         day = calendar.get(Calendar.DAY_OF_MONTH)
         month = calendar.get(Calendar.MONTH)
@@ -178,7 +181,18 @@ class MedicalPersonnelPatientItemActivity : AppCompatActivity(), DatePickerDialo
         selectedDay = day
         selectedMonth = month + 1
         selectedYear = year
-        timeDialog?.show()
+        calendar?.set(year, month, day)
+
+        if(calendar?.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY ||
+            calendar?.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) {
+            Snackbar.make(
+                bookAppointmentButton as View,
+                "Can't book an appointment on the weekend",
+                Snackbar.LENGTH_SHORT
+            ).show()
+        } else {
+            timeDialog?.show()
+        }
     }
 
     private fun getSelectedTime() : String {
@@ -193,57 +207,41 @@ class MedicalPersonnelPatientItemActivity : AppCompatActivity(), DatePickerDialo
 
     private fun bookAppointment(patientUsername: String?, selectedDate: String, selectedTime: String) {
 
-        println("#########################################################################")
-        println(patientUsername)
-        println(selectedDate)
-        println(selectedTime)
-        println("#########################################################################")
-
         val dose = MedicalPersonnelDoseDto(patientUsername, selectedDate, selectedTime)
 
         patientDosesProgressBarManager.showProgressBar(this)
 
         AUBCOVAXService.AUBCOVAXApi().reserveSecondAppointment(
             "Bearer ${Authentication.getToken()}", dose)
-            .enqueue(object: Callback<String> {
+            .enqueue(object: Callback<ResponseMessageDto> {
 
-                override fun onResponse(call: Call<String>, response: Response<String>) {
-
-                    println("#########################################################################")
-                    println("inside onResponse")
-                    println("#########################################################################")
+                override fun onResponse(call: Call<ResponseMessageDto>, response: Response<ResponseMessageDto>) {
 
                     patientDosesProgressBarManager.hideProgressBar()
 
                     if(response.isSuccessful) {
-                        println("#########################################################################")
-                        println("inside isSuccessful")
-                        println("#########################################################################")
                         val intent = intent
                         finish()
                         startActivity(intent)
                     }
                     else {
-                        println("#########################################################################")
-                        println("inside else")
-                        println("#########################################################################")
                         if(response.code() == 401 || response.code() == 403) {
                             Authentication.logout(context)
                         }
                         else {
-                            Snackbar.make(
-                                fullNameTextView as View,
-                               response.errorBody().toString(),
-                                Snackbar.LENGTH_LONG
-                            ).show()
+                            val errorResponse = Gson().fromJson(response.errorBody()!!.charStream(), ResponseMessageDto::class.java)
+                            errorResponse.message?.let {
+                                Snackbar.make(
+                                    fullNameTextView as View,
+                                    it,
+                                    Snackbar.LENGTH_LONG
+                                ).show()
+                            }
                         }
                     }
                 }
 
-                override fun onFailure(call: Call<String>, t: Throwable) {
-                    println("#########################################################################")
-                    println("inside onFailure")
-                    println("#########################################################################")
+                override fun onFailure(call: Call<ResponseMessageDto>, t: Throwable) {
                     patientDosesProgressBarManager.hideProgressBar()
                     Snackbar.make(
                         fullNameTextView as View,
@@ -271,7 +269,21 @@ class MedicalPersonnelPatientItemActivity : AppCompatActivity(), DatePickerDialo
                     if(response.isSuccessful) {
                         doses?.addAll(response.body()!!)
                         adapter?.notifyDataSetChanged()
+                        if(doses?.size == 2) {
+                            bookAppointmentButton?.visibility = View.GONE
+                        }
+                        else {
+                            bookAppointmentButton?.visibility = View.VISIBLE
+                        }
                         setListViewHeightBasedOnChildren(listview)
+                    }
+                    else if(response.code() == 404) {
+                        bookAppointmentButton?.visibility = View.GONE
+                        Snackbar.make(
+                            fullNameTextView as View,
+                            "No reservations were found",
+                            Snackbar.LENGTH_LONG
+                        ).show()
                     }
                     else {
                         Snackbar.make(
@@ -314,8 +326,10 @@ class MedicalPersonnelPatientItemActivity : AppCompatActivity(), DatePickerDialo
                     if(response.isSuccessful) {
                         personnelAssignedDoses?.addAll(response.body()!!)
                         for (dose in personnelAssignedDoses!!) {
-                            val dateTime = "${dose.date}-${dose.time}"
-                            personnelAssignedDosesMap[dateTime] = ""
+                            if(dose.status != "confirmed") {
+                                val dateTime = "${dose.date}-${dose.time}"
+                                personnelAssignedDosesMap[dateTime] = ""
+                            }
                         }
                     }
                     else {

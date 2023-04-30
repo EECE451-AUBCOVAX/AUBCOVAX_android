@@ -24,11 +24,6 @@ class PatientDosesFragment : Fragment() {
     private var doses : ArrayList<DoseModel>? = ArrayList()
     private var adapter : PatientDosesAdapter? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        fillDosesList()
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view: View = inflater.inflate(R.layout.patient_doses_fragment, container, false)
@@ -38,6 +33,13 @@ class PatientDosesFragment : Fragment() {
         listview?.adapter = adapter
 
         return view
+    }
+
+    override fun onResume() {
+        super.onResume()
+        doses?.clear()
+        adapter?.notifyDataSetChanged()
+        fillDosesList()
     }
 
     private fun fillDosesList() {

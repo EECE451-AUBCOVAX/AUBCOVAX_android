@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ListView
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.eece451.aubcovax.ProgressBarManager
 import com.eece451.aubcovax.R
@@ -12,6 +13,7 @@ import com.eece451.aubcovax.api.AUBCOVAXService
 import com.eece451.aubcovax.api.Authentication
 import com.eece451.aubcovax.api.models.DoseModel
 import com.google.android.material.snackbar.Snackbar
+import org.w3c.dom.Text
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -24,16 +26,23 @@ class MedicalPersonnelTasksFragment : Fragment() {
     private var tasks : ArrayList<DoseModel>? = ArrayList()
     private var adapter : MedicalPersonnelTasksAdapter? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    private var tasksPlaceHolder: TextView? = null
+
+    override fun onResume() {
+        super.onResume()
+        tasks?.clear()
+        adapter?.notifyDataSetChanged()
         fillTasksList()
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view: View = inflater.inflate(R.layout.admin_medical_personnel_fragment, container, false)
+        val view: View = inflater.inflate(R.layout.medical_personnel_tasks_fragment, container, false)
 
-        listview = view.findViewById(R.id.medicalPersonnelListView)
+        tasksPlaceHolder = view.findViewById(R.id.tasksPlaceHolder)
+        tasksPlaceHolder?.visibility = View.GONE
+
+        listview = view.findViewById(R.id.tasksListView)
         adapter = MedicalPersonnelTasksAdapter(layoutInflater, tasks!!)
         listview?.adapter = adapter
 
@@ -55,7 +64,17 @@ class MedicalPersonnelTasksFragment : Fragment() {
                 ) {
                     progressBarManager.hideProgressBar()
                     if(response.isSuccessful) {
-                        tasks?.addAll(response.body()!!)
+                        for(task in response.body()!!) {
+                            if(task.status != "confirmed") {
+                                tasks?.add(task)
+                            }
+                        }
+                        if(tasks?.size == 0) {
+                            tasksPlaceHolder?.visibility = View.VISIBLE
+                        }
+                        else {
+                            tasksPlaceHolder?.visibility = View.GONE
+                        }
                         adapter?.notifyDataSetChanged()
                     }
                     else {

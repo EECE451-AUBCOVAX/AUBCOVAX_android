@@ -25,8 +25,10 @@ class AdminMedicalPersonnelFragment : Fragment() {
     private var medicalPersonnel : ArrayList<MedicalPersonnelModel>? = ArrayList()
     private var adapter : AdminMedicalPersonnelAdapter? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    override fun onResume() {
+        super.onResume()
+        medicalPersonnel?.clear()
+        adapter?.notifyDataSetChanged()
         fillMedicalPersonnelList()
     }
 

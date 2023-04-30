@@ -3,6 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
         android:allowBackup="true"
@@ -13,11 +15,22 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AUBCOVAX"
         tools:targetApi="31">
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths" />
+        </provider>
+
         <activity
             android:name=".SplashActivity"
+            android:exported="true"
             android:label="@string/app_name"
-            android:theme="@style/SplashScreenTheme.AUBCOVAX"
-            android:exported="true">
+            android:theme="@style/SplashScreenTheme.AUBCOVAX">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -44,8 +57,7 @@
             android:exported="false" />
         <activity
             android:name=".MainActivity"
-            android:exported="true">
-        </activity>
+            android:exported="true"></activity>
     </application>
 
 </manifest>

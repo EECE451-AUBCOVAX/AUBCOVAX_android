@@ -274,17 +274,6 @@
                 android:textAllCaps="false"
                 android:textColor="#FFFFFF" />
 
-
-            <Button
-                android:id="@+id/emailCertificateButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="16dp"
-                android:backgroundTint="#3F51B5"
-                android:text="Email the patient a certificate"
-                android:textAllCaps="false"
-                android:textColor="#FFFFFF" />
-
         </LinearLayout>
     </LinearLayout>
 

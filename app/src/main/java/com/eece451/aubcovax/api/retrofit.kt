@@ -1,8 +1,11 @@
 package com.eece451.aubcovax.api
 
 import com.eece451.aubcovax.api.dtos.MedicalPersonnelDoseDto
+import com.eece451.aubcovax.api.dtos.ResponseMessageDto
 import com.eece451.aubcovax.api.models.*
+import okhttp3.ResponseBody
 import retrofit2.Call
+import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.*
@@ -41,6 +44,10 @@ object AUBCOVAXService {
         @GET("/user/reservation")
         fun getMyDoses(@Header("Authorization") authorization: String?) : Call<List<DoseModel>>
 
+        @GET("/user/certificate")
+        @Streaming
+        fun getMyCertificate(@Header("Authorization") authorization: String?) : Call<ResponseBody>
+
         @GET("personel/patienthistory")
         fun getPatientDoses(@Header("Authorization") authorization: String?,
                             @Query("user") user: String?) : Call<List<DoseModel>>
@@ -51,7 +58,7 @@ object AUBCOVAXService {
         @POST("personel/reserve")
         fun reserveSecondAppointment(@Header("Authorization") authorization: String?,
                                      @Body medicalPersonnelDoseDto : MedicalPersonnelDoseDto
-                                     ) : Call<String>
+                                     ) : Call<ResponseMessageDto>
 
         @POST("personel/dose_confirm")
         fun confirmDose(@Header("Authorization") authorization: String?,

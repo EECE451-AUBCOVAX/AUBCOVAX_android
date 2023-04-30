@@ -24,8 +24,10 @@ class AdminPatientsFragment : Fragment() {
 
     private val progressBarManager = ProgressBarManager()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    override fun onResume() {
+        super.onResume()
+        patients?.clear()
+        adapter?.notifyDataSetChanged()
         fillPatientsList()
     }
 

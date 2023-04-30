@@ -49,4 +49,9 @@ class MedicalPersonnelActivity : AppCompatActivity() {
             }
         })
     }
+
+    override fun onResume() {
+        super.onResume()
+        viewPagerAdapter?.notifyDataSetChanged()
+    }
 }

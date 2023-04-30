@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import com.eece451.aubcovax.R
 import com.eece451.aubcovax.api.AUBCOVAXService
@@ -42,6 +43,7 @@ class MedicalPersonnelDosesAdapter (private val context: Context,
         val date: String = dataSource[position].date.toString()
         val time: String? = dataSource[position].time
 
+        view.findViewById<LinearLayout>(R.id.patientNameLayout).visibility = View.GONE
         view.findViewById<TextView>(R.id.doseAdministeredByTextView).text = "$medicalPersonnelName"
         view.findViewById<TextView>(R.id.doseDateAndTimeTextView).text = "$date $time"
 

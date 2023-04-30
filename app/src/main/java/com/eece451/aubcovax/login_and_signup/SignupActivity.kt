@@ -139,6 +139,8 @@ class SignupActivity : AppCompatActivity() {
         val password = passwordEditText?.editText?.text.toString()
         val confirmPassword = confirmPasswordEditText?.editText?.text.toString()
 
+        inputIsValid = true
+
         validate(firstName, firstNameEditText, "Please enter your first name")
         validate(lastName, lastNameEditText, "Please enter your last name")
         validate(dateOfBirth, dateOfBirthEditText, "Please enter your date of birth")
