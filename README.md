@@ -24,4 +24,6 @@ Kindly check [build.gradle](app/build.gradle)
 - Admin Activity
     - Me Fragment
     - Patients Fragment
-    - Medical Personnel Fragment     
+    - Medical Personnel Fragment  
+
+### Kindly check [this](https://github.com/EECE451-AUBCOVAX) for more information about the AUBCOVAX platform.
